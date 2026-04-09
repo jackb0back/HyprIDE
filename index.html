@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>HyprIDE</title>
+    <!-- Modern typography for a premium feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <div id="app">
+      <div id="topbar">
+        <div class="menu-item active">File</div>
+        <div class="menu-item">Edit</div>
+        <div class="menu-item">View</div>
+        <div class="menu-item">Window</div>
+        <div class="menu-item">Help</div>
+      </div>
+      <div id="tabs-container">
+        <!-- Tabs will be injected here -->
+        <div id="add-tab" title="New Grid">+</div>
+      </div>
+      <div id="main-content">
+        <div id="sidebar">
+          <div class="sidebar-icon" title="Explorer">🗂️</div>
+          <div class="sidebar-icon" title="Search">🔍</div>
+          <div class="sidebar-icon" title="Outline">📝</div>
+          <div class="sidebar-spacer"></div>
+          <div class="sidebar-icon" title="Settings">⚙️</div>
+        </div>
+        <div id="canvas-container">
+          <div id="grid-world">
+            <!-- Windows will be injected here by WindowManager -->
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- UI Overlay elements -->
+    <div id="overlay-search" class="hidden">
+      <input type="text" id="search-input" placeholder="Search files or windows by name (ctrl-p)..." autocomplete="off" />
+      <div id="search-results"></div>
+    </div>
+
+    <script type="module" src="./renderer.js"></script>
+  </body>
+</html>
