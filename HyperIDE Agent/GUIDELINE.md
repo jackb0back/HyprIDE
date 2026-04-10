@@ -1,5 +1,4 @@
----
-
+___
 # HyprIDE
 
 HyprIDE is a programming IDE similar to Visual Studio code featuring an infinite "canvas" or grid, in which editor tabs and windows are rendered. Open editors, rather than being created as a new tab, are placed onto the grid and can be moved, resized, tiled (like the window manager Hyprland), or closed at will. Other "windows" such as IDE settings or terminal instances, are also placed on the grid. The editor still features a "tab" system for various project folders or separate canvas instances.
@@ -8,7 +7,7 @@ HyprIDE is a programming IDE similar to Visual Studio code featuring an infinite
 
 The `AGENT` folder contains content to be used in the editing process. `AGENT/mock` is a folder containing sudo-code and mockup's for features to be implemented. `AGENT/Objectives` is a folder containing the current objective for a prompt.
 
----
+___
 
 # Feature breakdown
 
@@ -31,5 +30,13 @@ The GRID should also support other windows than just open editors, like terminal
 ---
 
 # Tech Stack Breakdown
-
-HyprIDE should be built with an Electron framework, similar to that of visual studio code, using NodeJS and other necessary library. Though visual studio code is written mostly with typescript, for this we will use javascript as I am unfamiliar with typescript.
+The following things will be used:
+- Electron
+- NodeJS
+- NPM
+- Vite
+The tech stack should be similar to that of Visual Studio Code's, as this is a desktop application. 
+Also make sure to install:
+- Monaco Editor
+- shadcn UI
+The majority of the UI should be built using shadcn.
