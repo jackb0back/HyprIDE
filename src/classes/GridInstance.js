@@ -8,6 +8,8 @@ export class GridInstance {
     this.scrollY = 0;
     this.zoom = 1; // 1 = 100%
     this.windows = {};
+    this.focusedWindowId = null;
+    this.isEditMode = false;
   }
 
   addWindow(window) {

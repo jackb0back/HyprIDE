@@ -1,13 +1,18 @@
-import { useState, useCallback, useEffect } from 'react';
-import { GridInstance } from './classes/GridInstance';
-import Grid from './components/Grid';
-import TabSystem from './components/TabSystem';
+import { useState, useCallback, useEffect } from "react";
+import { GridInstance } from "./classes/GridInstance";
+import Grid from "./components/Grid";
+import TabSystem from "./components/TabSystem";
 
 function App() {
   const [grids, setGrids] = useState({
-    'grid-1': new GridInstance('grid-1', 'Project Alpha', window.innerWidth, window.innerHeight),
+    "grid-1": new GridInstance(
+      "grid-1",
+      "Project Alpha",
+      window.innerWidth,
+      window.innerHeight,
+    ),
   });
-  const [activeGridId, setActiveGridId] = useState('grid-1');
+  const [activeGridId, setActiveGridId] = useState("grid-1");
 
   useEffect(() => {
     const handleResize = () => {
@@ -15,7 +20,12 @@ function App() {
         const next = { ...prev };
         Object.keys(next).forEach((id) => {
           const grid = next[id];
-          const newGrid = new GridInstance(grid.id, grid.title, window.innerWidth, window.innerHeight);
+          const newGrid = new GridInstance(
+            grid.id,
+            grid.title,
+            window.innerWidth,
+            window.innerHeight,
+          );
           Object.assign(newGrid, grid, {
             viewPortWidth: window.innerWidth,
             viewPortHeight: window.innerHeight,
@@ -26,16 +36,21 @@ function App() {
       });
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const updateGrid = useCallback((gridId, updates) => {
     setGrids((prev) => {
       const grid = prev[gridId];
       if (!grid) return prev;
-      
-      const newGrid = new GridInstance(grid.id, grid.title, grid.viewPortWidth, grid.viewPortHeight);
+
+      const newGrid = new GridInstance(
+        grid.id,
+        grid.title,
+        grid.viewPortWidth,
+        grid.viewPortHeight,
+      );
       Object.assign(newGrid, grid, updates);
       return { ...prev, [gridId]: newGrid };
     });
@@ -46,12 +61,37 @@ function App() {
       const grid = prev[gridId];
       if (!grid) return prev;
 
-      const newGrid = new GridInstance(grid.id, grid.title, grid.viewPortWidth, grid.viewPortHeight);
+      const newGrid = new GridInstance(
+        grid.id,
+        grid.title,
+        grid.viewPortWidth,
+        grid.viewPortHeight,
+      );
       Object.assign(newGrid, grid);
       newGrid.windows = { ...grid.windows };
       if (newGrid.windows[windowId]) {
-        newGrid.windows[windowId] = { ...newGrid.windows[windowId], ...updates };
+        newGrid.windows[windowId] = {
+          ...newGrid.windows[windowId],
+          ...updates,
+        };
       }
+      return { ...prev, [gridId]: newGrid };
+    });
+  }, []);
+
+  const focusWindow = useCallback((gridId, windowId) => {
+    setGrids((prev) => {
+      const grid = prev[gridId];
+      if (!grid) return prev;
+      if (grid.focusedWindowId === windowId) return prev;
+
+      const newGrid = new GridInstance(
+        grid.id,
+        grid.title,
+        grid.viewPortWidth,
+        grid.viewPortHeight,
+      );
+      Object.assign(newGrid, grid, { focusedWindowId: windowId });
       return { ...prev, [gridId]: newGrid };
     });
   }, []);
@@ -61,17 +101,30 @@ function App() {
       const grid = prev[gridId];
       if (!grid) return prev;
 
-      const newGrid = new GridInstance(grid.id, grid.title, grid.viewPortWidth, grid.viewPortHeight);
+      const newGrid = new GridInstance(
+        grid.id,
+        grid.title,
+        grid.viewPortWidth,
+        grid.viewPortHeight,
+      );
       Object.assign(newGrid, grid);
       newGrid.windows = { ...grid.windows };
       delete newGrid.windows[windowId];
+      if (newGrid.focusedWindowId === windowId) {
+        newGrid.focusedWindowId = Object.keys(newGrid.windows)[0] || null;
+      }
       return { ...prev, [gridId]: newGrid };
     });
   }, []);
 
   const handleNewTab = () => {
     const id = `grid-${Object.keys(grids).length + 1}`;
-    const newGrid = new GridInstance(id, `Grid ${Object.keys(grids).length + 1}`, window.innerWidth, window.innerHeight);
+    const newGrid = new GridInstance(
+      id,
+      `Grid ${Object.keys(grids).length + 1}`,
+      window.innerWidth,
+      window.innerHeight,
+    );
     setGrids((prev) => ({ ...prev, [id]: newGrid }));
     setActiveGridId(id);
   };
@@ -81,8 +134,13 @@ function App() {
       const newGrids = { ...prev };
       delete newGrids[id];
       if (Object.keys(newGrids).length === 0) {
-        const fallbackId = 'grid-1';
-        newGrids[fallbackId] = new GridInstance(fallbackId, 'New Grid', window.innerWidth, window.innerHeight);
+        const fallbackId = "grid-1";
+        newGrids[fallbackId] = new GridInstance(
+          fallbackId,
+          "New Grid",
+          window.innerWidth,
+          window.innerHeight,
+        );
         setActiveGridId(fallbackId);
       } else if (activeGridId === id) {
         setActiveGridId(Object.keys(newGrids)[0]);
@@ -100,14 +158,21 @@ function App() {
       y: 100,
       width: 400,
       height: 300,
-      content: "Hello HyprIDE! This is a test window on the infinite grid."
+      content: "Hello HyprIDE! This is a test window on the infinite grid.",
     };
-    
+
     setGrids((prev) => {
       const grid = prev[activeGridId];
-      const newGrid = new GridInstance(grid.id, grid.title, grid.viewPortWidth, grid.viewPortHeight);
-      Object.assign(newGrid, grid);
-      newGrid.windows = { ...grid.windows, [winId]: newWindow };
+      const newGrid = new GridInstance(
+        grid.id,
+        grid.title,
+        grid.viewPortWidth,
+        grid.viewPortHeight,
+      );
+      Object.assign(newGrid, grid, {
+        windows: { ...grid.windows, [winId]: newWindow },
+        focusedWindowId: winId,
+      });
       return { ...prev, [activeGridId]: newGrid };
     });
   };
@@ -117,7 +182,7 @@ function App() {
   return (
     <div className="flex flex-col w-screen h-screen bg-[#1e1e1e] text-white overflow-hidden">
       <TabSystem
-        tabs={Object.values(grids).map(g => ({ id: g.id, title: g.title }))}
+        tabs={Object.values(grids).map((g) => ({ id: g.id, title: g.title }))}
         activeTabId={activeGridId}
         onTabChange={setActiveGridId}
         onTabClose={handleTabClose}
@@ -129,11 +194,14 @@ function App() {
             key={activeGridId}
             grid={activeGrid}
             onUpdateGrid={(updates) => updateGrid(activeGridId, updates)}
-            onUpdateWindow={(winId, updates) => updateWindow(activeGridId, winId, updates)}
+            onUpdateWindow={(winId, updates) =>
+              updateWindow(activeGridId, winId, updates)
+            }
             onCloseWindow={(winId) => closeWindow(activeGridId, winId)}
+            onFocusWindow={(winId) => focusWindow(activeGridId, winId)}
           />
         )}
-        
+
         <button
           onClick={addTestWindow}
           className="absolute bottom-6 right-6 w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-700 transition-colors z-50"

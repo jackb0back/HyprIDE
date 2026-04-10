@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 
-const EditorWindow = ({ window, zoom = 1, onUpdate, onClose }) => {
+const EditorWindow = ({
+  window,
+  zoom = 1,
+  isFocused = false,
+  isEditMode = false,
+  onUpdate,
+  onClose,
+  onFocus,
+}) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0, winX: 0, winY: 0 });
   const [isResizing, setIsResizing] = useState(false);
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, w: 0, h: 0 });
 
   const handleMouseDown = (e) => {
+    if (isEditMode) return;
+    onFocus();
     const isModifierActive = e.shiftKey && e.altKey;
 
     if (
@@ -115,31 +125,46 @@ const EditorWindow = ({ window, zoom = 1, onUpdate, onClose }) => {
 
   return (
     <div
-      className={`absolute bg-[#1e1e1e] border border-[#333] shadow-lg flex flex-col pointer-events-auto transition-colors duration-200 ${
-        isDragging || isResizing
-          ? "border-blue-500/50 shadow-blue-500/10"
-          : "hover:border-[#444]"
-      } ${isDragging || isResizing ? "select-none" : ""}`}
+      className={`absolute bg-[#1e1e1e] border shadow-lg flex flex-col pointer-events-auto transition-colors duration-200 ${
+        isDragging || isResizing || isFocused
+          ? "border-blue-500 shadow-blue-500/20"
+          : "border-[#333] hover:border-[#444]"
+      } ${isDragging || isResizing ? "select-none" : ""} ${
+        isEditMode ? "cursor-default" : ""
+      }`}
       style={{
         left: window.x,
         top: window.y,
         width: window.width,
         height: window.height,
-        zIndex: isDragging || isResizing ? 1000 : 10,
+        zIndex: isDragging || isResizing ? 1000 : isFocused ? 100 : 10,
       }}
       onMouseDown={handleMouseDown}
       onContextMenu={handleContextMenu}
     >
-      <div className="window-header h-8 flex items-center justify-between px-3 bg-[#252526] border-b border-[#333] cursor-move select-none">
-        <span className="text-xs text-gray-400 truncate font-medium">
+      <div
+        className={`window-header h-8 flex items-center justify-between px-3 border-b select-none ${
+          isFocused
+            ? "bg-[#2d2d2d] border-blue-500/30"
+            : "bg-[#252526] border-[#333]"
+        } ${isEditMode ? "cursor-default" : "cursor-move"}`}
+      >
+        <span
+          className={`text-xs truncate font-medium ${
+            isFocused ? "text-blue-400" : "text-gray-400"
+          }`}
+        >
           {window.title}
         </span>
         <button
           onClick={(e) => {
+            if (isEditMode) return;
             e.stopPropagation();
             onClose();
           }}
-          className="p-1 hover:bg-[#c42b1c] rounded transition-colors group"
+          className={`p-1 rounded transition-colors group ${
+            isEditMode ? "cursor-default opacity-50" : "hover:bg-[#c42b1c]"
+          }`}
         >
           <X size={14} className="text-gray-400 group-hover:text-white" />
         </button>
@@ -150,12 +175,14 @@ const EditorWindow = ({ window, zoom = 1, onUpdate, onClose }) => {
         </div>
       </div>
       {/* Visual Resize Handle */}
-      <div
-        className="absolute bottom-0 right-0 w-5 h-5 cursor-nwse-resize flex items-end justify-end p-0.5 group/resize"
-        onMouseDown={handleResizeStart}
-      >
-        <div className="w-2 h-2 border-r-2 border-b-2 border-gray-600 group-hover/resize:border-blue-500 transition-colors" />
-      </div>
+      {!isEditMode && (
+        <div
+          className="absolute bottom-0 right-0 w-5 h-5 cursor-nwse-resize flex items-end justify-end p-0.5 group/resize"
+          onMouseDown={handleResizeStart}
+        >
+          <div className="w-2 h-2 border-r-2 border-b-2 border-gray-600 group-hover/resize:border-blue-500 transition-colors" />
+        </div>
+      )}
     </div>
   );
 };
